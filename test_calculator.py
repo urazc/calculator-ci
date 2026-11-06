@@ -1,6 +1,7 @@
 import pytest
+import math
 
-from calculator import add, subtract, multiply, divide
+from calculator import add, subtract, multiply, divide, sin
 
 
 def test_add():
@@ -22,3 +23,14 @@ def test_divide():
 def test_divide_by_zero():
     with pytest.raises(ZeroDivisionError):
         divide(6, 0)
+
+def test_sin_zero():
+    assert sin(0) == pytest.approx(0)
+
+
+def test_sin_pi_over_two():
+    assert sin(math.pi / 2) == pytest.approx(1)
+
+
+def test_sin_pi():
+    assert sin(math.pi) == pytest.approx(0)
