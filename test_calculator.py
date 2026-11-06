@@ -34,3 +34,7 @@ def test_sin_pi_over_two():
 
 def test_sin_pi():
     assert sin(math.pi) == pytest.approx(0)
+
+
+def test_sin_negative():
+    assert sin(-math.pi / 2) == pytest.approx(-1)
