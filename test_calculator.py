@@ -1,7 +1,7 @@
 import pytest
 import math
 
-from calculator import add, subtract, multiply, divide, sin, tangent, square_area
+from calculator import add, subtract, multiply, divide, sin, tangent, square_area, triangle_area
 
 
 def test_add():
@@ -49,3 +49,6 @@ def test_tangent_45_degrees():
     
 def test_square_area():
     assert square_area(4) == 16
+
+def test_triangle_area():
+    assert triangle_area(4,8) == 16
