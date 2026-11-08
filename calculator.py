@@ -18,6 +18,11 @@ def divide(a, b):
 def sin(x):
     return math.sin(x)
 
+def sin(x):
+    return math.sin(x)
+
+def tangent(angle):
+    return math.tan(angle)
 
 if __name__ == "__main__":
     print("6 / 2 =", divide(6, 2))

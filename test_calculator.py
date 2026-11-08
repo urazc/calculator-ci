@@ -1,7 +1,7 @@
 import pytest
 import math
 
-from calculator import add, subtract, multiply, divide, sin
+from calculator import add, subtract, multiply, divide, sin, tangent
 
 
 def test_add():
@@ -38,3 +38,11 @@ def test_sin_pi():
 
 def test_sin_negative():
     assert sin(-math.pi / 2) == pytest.approx(-1)
+    
+def test_tangent_zero():
+    assert tangent(0) == pytest.approx(0.0)
+
+
+def test_tangent_45_degrees():
+    angle = math.pi / 4  # 45 degrees in radians
+    assert tangent(angle) == pytest.approx(1.0)
