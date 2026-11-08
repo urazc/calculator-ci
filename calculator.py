@@ -29,6 +29,9 @@ def square_area(side):
     
 def triangle_area(h,w):
     return multiply(h,w)/2.0
+    
+def pow_(number, exponent):
+    return pow(number,exponent)
 
 if __name__ == "__main__":
     print("6 / 2 =", divide(6, 2))
