@@ -1,28 +1,152 @@
+# =====================================================================
+# CALCULATOR CI - GITHUB ACTIONS WORKFLOW
+# =====================================================================
+#
+# Save this file in the calculator repository at:
+#
+#   .github/workflows/ci.yml
+#
+# GitHub Actions looks in .github/workflows/ for workflow files.
+# A workflow describes when an automated process should start and
+# which jobs and steps GitHub should run.
+#
+# Lines starting with # are comments. They help people read the file;
+# GitHub does not execute them as commands.
+#
+# YAML uses indentation to show which settings belong together.
+# Use spaces for indentation, not tab characters.
+# =====================================================================
+
+
+# This is the workflow's display name.
+# GitHub shows "Calculator CI" in the Actions tab.
 name: Calculator CI
 
+
+# "on" defines the events that can start this workflow.
+# The two events below are independent triggers:
+#   1. a push to main;
+#   2. a pull request being opened, reopened or updated.
 on:
+
+  # A push event happens when new commits update a branch on GitHub.
   push:
+
+    # This filter applies only to the push event above.
+    # Run for pushes to main, but not for ordinary pushes to other branches.
+    #
+    # [main] is a YAML list containing one branch name.
+    # A merge that updates main can also produce a push event.
     branches: [main]
+
+  # Run when a pull request is opened, reopened or receives new commits.
+  # No target-branch filter is specified, so the event is not restricted
+  # to pull requests targeting main.
+  #
+  # This is a GitHub pull request event. It is not the "git pull" command.
   pull_request:
 
+
+# These settings control the permissions of the GitHub token that
+# is automatically provided to this workflow.
 permissions:
+
+  # Allow the token to read the repository's contents.
+  # The checkout action uses repository access to obtain the code.
   contents: read
 
+
+# "jobs" is the section in which we define the work to perform.
+# A workflow can have several jobs; this workflow has one.
 jobs:
+
+  # "tests" is the identifier of this job.
+  # GitHub shows its result as a check, which can be selected as a
+  # required status check in the repository's branch protection settings.
   tests:
+
+    # GitHub runs this job on an Ubuntu Linux runner.
+    # The runner is a separate computer from the developer's laptop.
+    # GitHub can update the Ubuntu image behind "ubuntu-latest";
+    # this label does not pin one exact Ubuntu release.
     runs-on: ubuntu-latest
 
+    # "steps" is an ordered list of actions and shell commands.
+    # Each dash (-) below begins one step.
+    # GitHub normally runs these steps in order and stops subsequent
+    # ordinary steps if an earlier step fails.
     steps:
+
+      # ----------------------------------------------------------------
+      # STEP 1: OBTAIN THE PROJECT FILES
+      # ----------------------------------------------------------------
+
+      # This name is a label displayed in the job's log on GitHub.
       - name: Check out the code
+
+        # "uses" runs an existing action instead of a shell command.
+        # actions/checkout copies the repository code for this workflow
+        # run onto the runner, so later steps can access the project.
+        #
+        # @v7 selects major version 7 of the checkout action.
+        # It is the action version, not a Python version.
         uses: actions/checkout@v7
 
+
+      # ----------------------------------------------------------------
+      # STEP 2: SELECT PYTHON
+      # ----------------------------------------------------------------
+
+      # This label appears in the job's step list.
       - name: Set up Python
+
+        # Use the setup-python action to make the selected Python
+        # version available to subsequent steps.
+        # @v7 refers to major version 7 of this action.
         uses: actions/setup-python@v7
+
+        # "with" supplies input settings to the action above.
         with:
+
+          # Select Python 3.11 for this job.
+          # The quotes keep "3.11" as a text value in YAML.
+          # This selects the 3.11 series, not one exact patch release.
           python-version: "3.11"
 
+
+      # ----------------------------------------------------------------
+      # STEP 3: INSTALL THE TESTING TOOL
+      # ----------------------------------------------------------------
+
+      # This label appears in the job's step list.
       - name: Install the test tools
+
+        # "run" executes a shell command on the Ubuntu runner.
+        #
+        # "python -m pip" runs pip with the selected Python interpreter.
+        # "install" asks pip to install the listed packages.
+        # "-r requirements-dev.txt" reads that list from the file.
+        #
+        # Our requirements-dev.txt contains pytest, which is needed to
+        # execute the calculator tests. The file must be in the commit.
         run: python -m pip install -r requirements-dev.txt
 
+
+      # ----------------------------------------------------------------
+      # STEP 4: RUN THE CALCULATOR TESTS
+      # ----------------------------------------------------------------
+
+      # This label appears in the job's step list.
       - name: Run the tests
+
+        # Run pytest with the selected Python interpreter.
+        # The -v option displays the individual test names and results.
+        #
+        # pytest finds tests such as those in test_calculator.py.
+        # If the tests pass, pytest exits with status 0.
+        # If tests fail, it exits with a non-zero status and this job
+        # is reported as failed.
+        #
+        # A failed check does not automatically block every merge:
+        # a repository rule must require the "tests" status check.
         run: python -m pytest -v

@@ -1,7 +1,7 @@
 import pytest
 import math
 
-from calculator import add, subtract, multiply, divide, sin, tangent
+from calculator import add, subtract, multiply, divide, sin, tangent, square_area
 
 
 def test_add():
@@ -46,3 +46,6 @@ def test_tangent_zero():
 def test_tangent_45_degrees():
     angle = math.pi / 4  # 45 degrees in radians
     assert tangent(angle) == pytest.approx(1.0)
+    
+def test_square_area():
+    assert square_area(4) == 16
