@@ -33,5 +33,11 @@ def triangle_area(h,w):
 def pow_(number, exponent):
     return pow(number,exponent)
 
+def CircleArea(r):
+    if r >= 0:
+        return 3.14* r * r
+    else:
+        return "Nan"
+
 if __name__ == "__main__":
     print("6 / 2 =", divide(6, 2))
