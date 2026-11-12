@@ -37,7 +37,7 @@ def CircleArea(r):
     if r >= 0:
         return 3.14* r * r
     else:
-        return "Nan"
+        return "Error"
 
 if __name__ == "__main__":
     print("6 / 2 =", divide(6, 2))
