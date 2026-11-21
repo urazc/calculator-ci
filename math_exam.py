@@ -8,7 +8,7 @@ import math
 import re
 from pathlib import Path
 
-EXAM_FILE = Path(__file__).with_name("exam.u")
+EXAM_FILE = Path(__file__).with_name("exam.uraz")
 QUESTION = re.compile(
     r"^\s*(\d+)\.\s*[^:]+:\s*"
     r"(-?\d+(?:\.\d+)?)\s*([+*/-])\s*"
