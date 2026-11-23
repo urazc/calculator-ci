@@ -39,5 +39,9 @@ def CircleArea(r):
     else:
         return "Error"
 
+def Sqrt(number):
+    return pow_(number,0.5)
+
+
 if __name__ == "__main__":
     print("6 / 2 =", divide(6, 2))
