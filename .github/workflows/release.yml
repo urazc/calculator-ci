@@ -13,7 +13,7 @@ jobs:
       - name: Check out the tagged code
         uses: actions/checkout@v7
       - name: Publish the GitHub Release
-        uses: softprops/action-gh-release@v3/setup-python@v7
+        uses: softprops/action-gh-release@v3
         with:
           files: calculator.py
           fail_on_unmatched_files: true
