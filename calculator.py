@@ -39,7 +39,7 @@ def CircleArea(r):
     else:
         return "Error"
 
-def Sqrt(number)
+def Sqrt(number):
     return pow_(number,0.5)
 
 
