@@ -7,7 +7,6 @@ permissions:
   contents: write
 jobs:
   release:
-    if: ${{ !github.event.deleted }}
     runs-on: ubuntu-latest
     steps:
       - name: Check out the tagged code
