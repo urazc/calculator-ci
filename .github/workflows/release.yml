@@ -1,0 +1,19 @@
+name: Automated Calculator Release
+on:
+  push:
+    tags:
+      - 'v.*'
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the tagged code
+        uses: actions/checkout@v7
+      - name: Publish the GitHub Release
+        uses: softprops/action-gh-release@v3
+        with:
+          files: calculator.py
+          fail_on_unmatched_files: true
+          generate_release_notes: true
