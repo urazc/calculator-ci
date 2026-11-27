@@ -1,0 +1,69 @@
+name: Prepare deployment artefacts
+
+# This example expects the existing "Automated Release" workflow to run
+# only on release-tag pushes and to publish a normal, mutable release.
+# Both workflows must be present on the repository's default branch.
+on:
+  workflow_run:
+    workflows: ["Automated Release"]
+    types: [completed]
+
+permissions:
+  contents: write
+
+jobs:
+  build-deployment-artefacts:
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push'
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Check out the released commit
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          persist-credentials: false
+
+      - name: Validate the release version
+        env:
+          RELEASE_VERSION: ${{ github.event.workflow_run.head_branch }}
+        run: |
+          if [[ ! "$RELEASE_VERSION" =~ ^v\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Expected a version such as v.1.0.0; got: $RELEASE_VERSION"
+            exit 1
+          fi
+          REPO_ID="$(printf '%s' "${GITHUB_REPOSITORY,,}" | sha256sum | cut -c1-12)"
+          echo "VERSION=$RELEASE_VERSION" >> "$GITHUB_ENV"
+          echo "IMAGE=localhost/sccm4910-$REPO_ID:$RELEASE_VERSION" >> "$GITHUB_ENV"
+
+      - name: Create source archive
+        run: git archive --format=zip --output=calculator-source.zip HEAD
+
+      - name: Build the Podman image
+        env:
+          RELEASE_COMMIT: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          podman build \
+            --label "org.opencontainers.image.source=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" \
+            --label "org.opencontainers.image.version=$VERSION" \
+            --label "org.opencontainers.image.revision=$RELEASE_COMMIT" \
+            --tag "$IMAGE" .
+
+      - name: Save image and checksums
+        run: |
+          podman save --format docker-archive --output calculator-image.tar "$IMAGE"
+          sha256sum calculator-source.zip calculator-image.tar > SHA256SUMS
+
+      # Upload checksums last. The watcher waits until all assets exist and
+      # match, so it will not deploy an incomplete set of artefacts.
+      - name: Add artefacts to the existing release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ env.VERSION }}
+          files: |
+            calculator-source.zip
+            calculator-image.tar
+            SHA256SUMS
+          preserve_order: true
+          fail_on_unmatched_files: true
